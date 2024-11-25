@@ -1,0 +1,28 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+  jpa:
+    open-in-view: false
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  sql:
+    init:
+      mode: always
+
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: true
+
+logging:
+  level:
+    root: info
+    org:
+      springframework:
+        jdbc: debug

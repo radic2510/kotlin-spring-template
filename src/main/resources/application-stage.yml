@@ -1,0 +1,11 @@
+spring:
+  config:
+    activate:
+      on-profile: stage
+  jpa:
+    open-in-view: false
+    show-sql: false
+
+logging:
+  level:
+    root: info

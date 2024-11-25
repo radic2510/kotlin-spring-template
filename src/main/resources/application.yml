@@ -1,0 +1,12 @@
+spring:
+  profiles:
+    default: local
+    group:
+      test:
+        - common
+      local:
+        - common
+      stage:
+        - common
+      prod:
+        - common
