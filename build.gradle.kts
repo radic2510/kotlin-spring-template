@@ -26,7 +26,14 @@ dependencies {
 	implementation(libs.springBootStarterDataJpa)
 	implementation(libs.springBootStarterOauth2Client)
 	implementation(libs.springBootStarterSecurity)
+	implementation(libs.springBootStarterValidation)
 	implementation(libs.springBootStarterWeb)
+	implementation(libs.springBootSrarterRedis)
+
+	// jwt
+	implementation(libs.jjwt.api)
+	runtimeOnly(libs.jjwt.impl)
+	runtimeOnly(libs.jjwt.jackson)
 
 	runtimeOnly(libs.h2Database)
 	runtimeOnly(libs.postgresql)
