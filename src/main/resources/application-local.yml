@@ -15,6 +15,26 @@ spring:
     init:
       mode: always
 
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+
+          google:
+            client-id: your-google-client-id
+            client-secret: your-google-client-secret
+            scope: profile, email
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            client-name: Google
+#          apple:
+#            client-id: your-apple-client-id
+#            client-secret: your-apple-client-secret
+#            scope: name, email
+#            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+#            client-name: Apple
+
+
 decorator:
   datasource:
     p6spy:
