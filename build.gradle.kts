@@ -4,6 +4,7 @@ plugins {
 	alias(libs.plugins.springBoot)
 	alias(libs.plugins.springDependencyManagement)
 	alias(libs.plugins.kotlinJpa)
+	alias(libs.plugins.kotlinNoarg)
 }
 
 group = "com.yobi"
@@ -51,6 +52,12 @@ kotlin {
 }
 
 allOpen {
+	annotation("jakarta.persistence.Entity")
+	annotation("jakarta.persistence.MappedSuperclass")
+	annotation("jakarta.persistence.Embeddable")
+}
+
+noArg {
 	annotation("jakarta.persistence.Entity")
 	annotation("jakarta.persistence.MappedSuperclass")
 	annotation("jakarta.persistence.Embeddable")
