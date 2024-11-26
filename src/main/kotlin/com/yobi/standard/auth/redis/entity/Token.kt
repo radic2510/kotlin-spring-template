@@ -4,23 +4,25 @@ import jakarta.persistence.Id
 import org.springframework.data.redis.core.RedisHash
 import org.springframework.data.redis.core.index.Indexed
 
-@RedisHash(value = "jwt", timeToLive = 60 * 60 * 24 * 7)
+@RedisHash(value = Token.REDIS_HASH, timeToLive = Token.TTL)
 data class Token (
     @Id
-    var id: String? = null,
-
-    var refreshToken: String? = null,
-
+    val id: String,
+    var refreshToken: String,
     @Indexed
-    private var accessToken: String? = null
-
+    var accessToken: String,
 ) {
-    fun updateRefreshToken(refreshToken: String?): Token {
+    companion object {
+        const val REDIS_HASH = "jwt"
+        const val TTL = 60 * 60 * 24 * 7L
+    }
+
+    fun updateRefreshToken(refreshToken: String): Token {
         this.refreshToken = refreshToken
         return this
     }
 
-    fun updateAccessToken(accessToken: String?) {
+    fun updateAccessToken(accessToken: String) {
         this.accessToken = accessToken
     }
 }

@@ -1,108 +1,116 @@
 package com.yobi.standard.auth.jwt
 
+import com.yobi.standard.auth.exception.TokenException
+import com.yobi.standard.auth.service.TokenService
+import com.yobi.standard.common.exception.ErrorCode
+import io.jsonwebtoken.Claims
+import io.jsonwebtoken.ExpiredJwtException
+import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.MalformedJwtException
+import io.jsonwebtoken.security.Keys
+import io.jsonwebtoken.security.SecurityException
+import jakarta.annotation.PostConstruct
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.userdetails.User
+import org.springframework.stereotype.Component
+import org.springframework.util.StringUtils
+import java.util.Date
+import javax.crypto.SecretKey
 
-import lombok.RequiredArgsConstructor
+@Component
+class TokenProvider(
+    private val tokenService: TokenService
+) {
 
-@RequiredArgsConstructor
-@org.springframework.stereotype.Component
-class TokenProvider {
-    @org.springframework.beans.factory.annotation.Value("\${jwt.key}")
-    private val key: kotlin.String? = null
-    private var secretKey: javax.crypto.SecretKey? = null
-    private val tokenService: TokenService? = null
+    @Value("\${jwt.key}")
+    private lateinit var key: String
+    private lateinit var secretKey: SecretKey
+
+    companion object {
+        private const val ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30L
+        private const val REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60L * 24 * 7
+        private const val KEY_ROLE = "role"
+    }
 
     @PostConstruct
-    private fun setSecretKey() {
-        secretKey = io.jsonwebtoken.security.Keys.hmacShaKeyFor(key!!.toByteArray())
+    fun setSecretKey() {
+        secretKey = Keys.hmacShaKeyFor(key.toByteArray())
     }
 
-    fun generateAccessToken(authentication: org.springframework.security.core.Authentication): kotlin.String? {
-        return generateToken(authentication, TokenProvider.Companion.ACCESS_TOKEN_EXPIRE_TIME)
+    fun generateAccessToken(authentication: Authentication): String {
+        return generateToken(authentication, ACCESS_TOKEN_EXPIRE_TIME)
     }
 
-    fun generateRefreshToken(
-        authentication: org.springframework.security.core.Authentication,
-        accessToken: kotlin.String?
-    ) {
-        val refreshToken = generateToken(authentication, TokenProvider.Companion.REFRESH_TOKEN_EXPIRE_TIME)
-        tokenService.saveOrUpdate(authentication.getName(), refreshToken, accessToken)
+    fun generateRefreshToken(authentication: Authentication, accessToken: String) {
+        val refreshToken = generateToken(authentication, REFRESH_TOKEN_EXPIRE_TIME)
+        tokenService.saveOrUpdate(authentication.name, refreshToken, accessToken)
     }
 
-    private fun generateToken(
-        authentication: org.springframework.security.core.Authentication,
-        expireTime: kotlin.Long
-    ): kotlin.String? {
-        val now = java.util.Date()
-        val expiredDate = java.util.Date(now.getTime() + expireTime)
+    private fun generateToken(authentication: Authentication, expireTime: Long): String {
+        val now = Date()
+        val expiredDate = Date(now.time + expireTime)
 
-        val authorities = authentication.getAuthorities().stream()
-            .map<kotlin.String?> { obj: GrantedAuthority? -> obj.getAuthority() }
-            .collect(java.util.stream.Collectors.joining())
+        val authorities = authentication.authorities
+            .joinToString(",") { it.authority }
 
         return Jwts.builder()
-            .subject(authentication.getName())
-            .claim(TokenProvider.Companion.KEY_ROLE, authorities)
+            .subject(authentication.name)
+            .claim(KEY_ROLE, authorities)
             .issuedAt(now)
             .expiration(expiredDate)
-            .signWith<javax.crypto.SecretKey?>(secretKey, Jwts.SIG.HS512)
+            .signWith(secretKey)
             .compact()
     }
 
-    fun getAuthentication(token: kotlin.String?): org.springframework.security.core.Authentication {
-        val claims: Claims = parseClaims(token)
-        val authorities: kotlin.collections.MutableList<SimpleGrantedAuthority?> = getAuthorities(claims)
+    fun getAuthentication(token: String): Authentication {
+        val claims = parseClaims(token)
+        val authorities = getAuthorities(claims)
 
-        val principal = org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities)
+        val principal = User(claims.subject, "", authorities)
         return UsernamePasswordAuthenticationToken(principal, token, authorities)
     }
 
-    private fun getAuthorities(claims: Claims): kotlin.collections.MutableList<SimpleGrantedAuthority?> {
-        return kotlin.collections.mutableListOf<SimpleGrantedAuthority?>(
-            SimpleGrantedAuthority(
-                claims.get(TokenProvider.Companion.KEY_ROLE).toString()
-            )
-        )
+    private fun getAuthorities(claims: Claims): List<SimpleGrantedAuthority> {
+        return listOf(SimpleGrantedAuthority(claims[KEY_ROLE].toString()))
     }
 
-    fun reissueAccessToken(accessToken: kotlin.String?): kotlin.String? {
-        if (org.springframework.util.StringUtils.hasText(accessToken)) {
-            val token: Token = tokenService.findByAccessTokenOrThrow(accessToken)
-            val refreshToken: kotlin.String? = token.getRefreshToken()
-
-            if (validateToken(refreshToken)) {
-                val reissueAccessToken = generateAccessToken(getAuthentication(refreshToken))
-                tokenService.updateToken(reissueAccessToken, token)
-                return reissueAccessToken
-            }
+    fun reissueAccessToken(accessToken: String?): String? {
+        if (!StringUtils.hasText(accessToken)) {
+            return null // null 반환으로 처리
         }
+
+        val token = tokenService.findByAccessTokenOrThrow(accessToken!!)
+        val refreshToken = token.refreshToken
+
+        if (validateToken(refreshToken)) {
+            val reissuedAccessToken = generateAccessToken(getAuthentication(refreshToken))
+            tokenService.updateToken(reissuedAccessToken, token)
+            return reissuedAccessToken
+        }
+
         return null
     }
 
-    fun validateToken(token: kotlin.String?): kotlin.Boolean {
-        if (!org.springframework.util.StringUtils.hasText(token)) {
-            return false
-        }
+    fun validateToken(token: String?): Boolean {
+        if (!StringUtils.hasText(token)) return false
 
-        val claims: Claims = parseClaims(token)
-        return claims.getExpiration().after(java.util.Date())
+        val claims = parseClaims(token!!)
+        return claims.expiration.after(Date())
     }
 
-    private fun parseClaims(token: kotlin.String?): Claims {
-        try {
-            return Jwts.parser().verifyWith(secretKey).build()
+    private fun parseClaims(token: String): Claims {
+        return try {
+            Jwts.parser().verifyWith(secretKey).build()
                 .parseSignedClaims(token).getPayload()
         } catch (e: ExpiredJwtException) {
-            return e.getClaims()
+            e.claims
         } catch (e: MalformedJwtException) {
-            throw TokenException(INVALID_TOKEN)
-        } catch (e: io.jsonwebtoken.security.SecurityException) {
-            throw TokenException(INVALID_JWT_SIGNATURE)
+            throw TokenException(ErrorCode.INVALID_TOKEN)
+        } catch (e: SecurityException) {
+            throw TokenException(ErrorCode.INVALID_JWT_SIGNATURE)
         }
-    }
-
-    companion object {
-        private val ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30L
-        private val REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60L * 24 * 7
-        private const val KEY_ROLE = "role"
     }
 }

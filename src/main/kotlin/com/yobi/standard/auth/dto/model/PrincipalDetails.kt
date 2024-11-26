@@ -8,22 +8,21 @@ import org.springframework.security.oauth2.core.user.OAuth2User
 
 @JvmRecord
 data class PrincipalDetails(
-    val member: Member?,
-    val attributes: MutableMap<String?, Any?>?,
-    val attributeKey: String?
+    val member: Member,
+    val attributes: MutableMap<String, Any>,
+    val attributeKey: String
 ) : OAuth2User, UserDetails {
-    override fun getName(): String? {
-        return attributes!![attributeKey].toString()
+
+    override fun getName(): String {
+        return attributes[attributeKey].toString()
     }
 
-    override fun getAttributes(): MutableMap<String?, Any?>? {
+    override fun getAttributes(): Map<String, Any> {
         return attributes
     }
 
-    override fun getAuthorities(): MutableCollection<out GrantedAuthority?> {
-        return mutableListOf<SimpleGrantedAuthority?>(
-            SimpleGrantedAuthority(member!!.role.key)
-        )
+    override fun getAuthorities(): Collection<GrantedAuthority> {
+        return listOf(SimpleGrantedAuthority(member.role.key))
     }
 
     override fun getPassword(): String? {
@@ -31,7 +30,7 @@ data class PrincipalDetails(
     }
 
     override fun getUsername(): String {
-        return member!!.memberKey
+        return member.memberKey
     }
 
     override fun isAccountNonExpired(): Boolean {

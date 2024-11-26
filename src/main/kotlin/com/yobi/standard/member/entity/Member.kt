@@ -1,5 +1,7 @@
 package com.yobi.standard.member.entity
 
+import com.yobi.standard.common.entity.BaseTimeEntity
+import com.yobi.standard.member.dto.MemberUpdateRequest
 import jakarta.persistence.Column
 import jakarta.persistence.Embedded
 import jakarta.persistence.Entity
@@ -17,10 +19,10 @@ data class Member (
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
-    @Column(length = 10, nullable = false)
-    val name: String,
+    @Column(nullable = false, length = 10)
+    var name: String,
 
-    @Column(length = 20, nullable = false)
+    @Column(nullable = false, length = 20, unique = true)
     val email: String,
 
     @Column(nullable = false)
@@ -34,5 +36,18 @@ data class Member (
     val role: Role,
 
     @Embedded
-    val address: Address? = null,
-)
+    var address: Address? = null,
+) : BaseTimeEntity() {
+
+    fun address(address: Address) {
+        this.address = address
+    }
+
+    fun updateMember(request: MemberUpdateRequest) {
+        name = request.name
+        request.address?.let {
+            address = it.toEntity()
+        }
+    }
+
+}

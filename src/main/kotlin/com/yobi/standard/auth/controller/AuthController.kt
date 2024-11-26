@@ -16,14 +16,14 @@ class AuthController {
 //    private val redisMessageService: RedisMessageService? = null
 
     @GetMapping("/auth/success")
-    fun loginSuccess(loginResponse: @Valid LoginResponse?): ResponseEntity<LoginResponse?> {
-        return ResponseEntity.ok<LoginResponse?>(loginResponse)
+    fun loginSuccess(loginResponse: @Valid LoginResponse): ResponseEntity<LoginResponse> {
+        return ResponseEntity.ok<LoginResponse>(loginResponse)
     }
 
     @DeleteMapping("/auth/logout")
-    fun logout(@AuthenticationPrincipal userDetails: UserDetails): ResponseEntity<Void?> {
+    fun logout(@AuthenticationPrincipal userDetails: UserDetails): ResponseEntity<Unit> {
         tokenService!!.deleteRefreshToken(userDetails.username)
 //        redisMessageService.removeSubscribe(userDetails.getUsername())
-        return ResponseEntity.noContent().build<Void?>()
+        return ResponseEntity.noContent().build<Unit>()
     }
 }
