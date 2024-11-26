@@ -6,6 +6,9 @@ spring:
     open-in-view: false
     show-sql: false
 
+jwt:
+  key: prod-jwt-key
+
 logging:
   level:
     root: info

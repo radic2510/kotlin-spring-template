@@ -19,7 +19,7 @@ spring:
     oauth2:
       client:
         registration:
-          github:
+#          github:
 
           google:
             client-id: your-google-client-id
@@ -34,6 +34,8 @@ spring:
 #            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
 #            client-name: Apple
 
+jwt:
+  key: local-jwt-key
 
 decorator:
   datasource:
