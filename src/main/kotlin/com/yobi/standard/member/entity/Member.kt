@@ -19,10 +19,10 @@ data class Member (
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false, length = 50)
     var name: String,
 
-    @Column(nullable = false, length = 20, unique = true)
+    @Column(nullable = false, unique = true)
     val email: String,
 
     @Column(nullable = false)
