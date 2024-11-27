@@ -9,7 +9,6 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.MalformedJwtException
 import io.jsonwebtoken.security.Keys
 import io.jsonwebtoken.security.SecurityException
-import jakarta.annotation.PostConstruct
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -22,22 +21,17 @@ import javax.crypto.SecretKey
 
 @Component
 class TokenProvider(
-    private val tokenService: TokenService
-) {
+    private val tokenService: TokenService,
 
     @Value("\${jwt.key}")
-    private lateinit var key: String
-    private lateinit var secretKey: SecretKey
+    private val key: String
+) {
+    private val secretKey: SecretKey = Keys.hmacShaKeyFor(key.toByteArray())
 
     companion object {
         private const val ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30L
         private const val REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60L * 24 * 7
         private const val KEY_ROLE = "role"
-    }
-
-    @PostConstruct
-    fun setSecretKey() {
-        secretKey = Keys.hmacShaKeyFor(key.toByteArray())
     }
 
     fun generateAccessToken(authentication: Authentication): String {
