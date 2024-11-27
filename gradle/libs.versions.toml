@@ -3,6 +3,7 @@ kotlin = "2.0.21"
 springBoot = "3.4.0"
 springDependencyManagement = "1.1.6"
 springRedis = "3.25.2"
+swagger = "2.7.0"
 jjwt = "0.12.3"
 
 [libraries]
@@ -29,6 +30,8 @@ jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
 jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt" }
 jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt" }
 
+# Swagger
+springdocOpenapi = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "swagger" }
 
 # Test
 springSecurityTest = { module = "org.springframework.security:spring-security-test" }
