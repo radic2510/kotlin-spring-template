@@ -6,7 +6,7 @@ spring:
     open-in-view: false
     show-sql: true
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
   h2:
     console:
       enabled: true
@@ -25,7 +25,7 @@ spring:
             client-id: your-google-client-id
             client-secret: your-google-client-secret
             scope: profile, email
-            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+#            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             client-name: Google
 #          apple:
 #            client-id: your-apple-client-id
@@ -35,7 +35,7 @@ spring:
 #            client-name: Apple
 
 jwt:
-  key: local-jwt-key
+  key: 20acb88d4cd80924cac42d9e4b0a903662b0abf58a12b53eacf75375d08038c6 # sample
 
 decorator:
   datasource:

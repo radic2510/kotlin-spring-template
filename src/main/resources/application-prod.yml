@@ -7,7 +7,7 @@ spring:
     show-sql: false
 
 jwt:
-  key: prod-jwt-key
+  key: 20acb88d4cd80924cac42d9e4b0a903662b0abf58a12b53eacf75375d08038c6 # sample
 
 logging:
   level:
