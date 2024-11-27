@@ -1,7 +1,9 @@
 [versions]
-kotlin = "1.9.25"
+kotlin = "2.0.21"
 springBoot = "3.4.0"
 springDependencyManagement = "1.1.6"
+springRedis = "3.25.2"
+jjwt = "0.12.3"
 
 [libraries]
 # Kotlin Common
@@ -13,11 +15,20 @@ springBootStarterActuator = { module = "org.springframework.boot:spring-boot-sta
 springBootStarterDataJpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa" }
 springBootStarterOauth2Client = { module = "org.springframework.boot:spring-boot-starter-oauth2-client" }
 springBootStarterSecurity = { module = "org.springframework.boot:spring-boot-starter-security" }
+springBootStarterValidation = { module = "org.springframework.boot:spring-boot-starter-validation" }
 springBootStarterWeb = { module = "org.springframework.boot:spring-boot-starter-web" }
+
+springBootSrarterRedis = { module = "org.redisson:redisson-spring-boot-starter", version.ref = "springRedis" }
 
 # DB
 h2Database = { module = "com.h2database:h2" }
 postgresql = { module = "org.postgresql:postgresql" }
+
+# JWT
+jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
+jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt" }
+jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt" }
+
 
 # Test
 springSecurityTest = { module = "org.springframework.security:spring-security-test" }
@@ -28,9 +39,10 @@ junitPlatformLauncher = { module = "org.junit.platform:junit-platform-launcher" 
 [plugins]
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinSpring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
+kotlinJpa = { id = "org.jetbrains.kotlin.plugin.jpa", version.ref = "kotlin" }
+kotlinNoarg = { id = "org.jetbrains.kotlin.plugin.noarg", version.ref = "kotlin" }
 springBoot = { id = "org.springframework.boot", version.ref = "springBoot" }
 springDependencyManagement = { id = "io.spring.dependency-management", version.ref = "springDependencyManagement" }
-kotlinJpa = { id = "org.jetbrains.kotlin.plugin.jpa", version.ref = "kotlin" }
 
 [bundles]
 kotlin-common = ["kotlinReflect", "jacksonModuleKotlin"]
