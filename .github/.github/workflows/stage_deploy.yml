@@ -1,0 +1,100 @@
+#name: Build and Deploy for Stage Environment
+#
+#on:
+#  push:
+#    branches:
+#      - release
+#
+#env:
+#  AWS_REGION: ${{ secrets.AWS_REGION }}
+#  AWS_ACCOUNT: ${{ secrets.AWS_ACCOUNT }}
+#  ECR_REPOSITORY: standard-template
+#  ECS_CLUSTER: standard-template
+#  ECS_SERVICE: standard-template
+#
+#jobs:
+#  checkout:
+#    name: Checkout Repository
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v4
+#
+#    build-docker:
+#      name: Build and Push Docker Image
+#      runs-on: ubuntu-latest
+#      needs: checkout
+#      steps:
+#        - name: Configure AWS credentials
+#          uses: aws-actions/configure-aws-credentials@v4
+#          with:
+#            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#            aws-region: ${{ env.AWS_REGION }}
+#
+#        - name: Login to Amazon ECR
+#          id: login-ecr
+#          uses: aws-actions/amazon-ecr-login@v2
+#
+#        - name: Build, tag, and push image to Amazon ECR
+#          env:
+#            ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+#            IMAGE_TAG: ${{ github.sha }}
+#          run: |
+#            docker build --build-arg ENVIRONMENT=stage -t $ECR_REGISTRY/$ECR_REPOSITORY:latest . -f docker/stage.Dockerfile
+#            docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+#            echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:latest" >> $GITHUB_OUTPUT
+#
+#    cdk-deploy:
+#      name: CDK Deployment
+#      runs-on: ubuntu-latest
+#      needs: build-docker
+#      steps:
+#        - name: Checkout
+#          uses: actions/checkout@v4
+#
+#        - name: Configure AWS credentials
+#          uses: aws-actions/configure-aws-credentials@v4
+#          with:
+#            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#            aws-region: ${{ env.AWS_REGION }}
+#
+#        - name: CDK Bootstrap
+#          working-directory: cdk
+#          run: |
+#            npm install
+#            npx cdk bootstrap
+#          env:
+#            AWS_DEFAULT_ACCOUNT: ${{ env.AWS_ACCOUNT }}
+#            AWS_DEFAULT_REGION: ${{ env.AWS_REGION }}
+#
+#        - name: CDK Synth
+#          working-directory: cdk
+#          run: npx cdk synth
+#
+#        - name: CDK Deploy
+#          working-directory: cdk
+#          run: npx cdk deploy --require-approval never
+#          env:
+#            AWS_TAG_ENV: stage
+#            PROJECT_CONTACT: radic2510@gmail.com
+#
+#    ecs-deploy:
+#      name: Update ECS Service
+#      runs-on: ubuntu-latest
+#      needs: [ build-docker, cdk-deploy ]
+#      steps:
+#        - name: Configure AWS credentials
+#          uses: aws-actions/configure-aws-credentials@v4
+#          with:
+#            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#            aws-region: ${{ env.AWS_REGION }}
+#
+#        - name: Update ECS Service
+#          run: |
+#            aws ecs update-service \
+#              --cluster $ECS_CLUSTER \
+#              --service $ECS_SERVICE \
+#              --force-new-deployment

@@ -31,13 +31,17 @@ dependencies {
 	implementation(libs.springBootStarterWeb)
 	implementation(libs.springBootSrarterRedis)
 
+	// DB
+	runtimeOnly(libs.h2Database)
+	runtimeOnly(libs.postgresql)
+
 	// jwt
 	implementation(libs.jjwt.api)
 	runtimeOnly(libs.jjwt.impl)
 	runtimeOnly(libs.jjwt.jackson)
 
-	runtimeOnly(libs.h2Database)
-	runtimeOnly(libs.postgresql)
+	// Swagger
+	implementation(libs.springdocOpenapi)
 
 	testImplementation(libs.springBootStarterTest)
 	testImplementation(libs.kotlinTestJunit5)
