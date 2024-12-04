@@ -32,6 +32,8 @@ dependencies {
 	implementation(libs.springBootSrarterRedis)
 
 	// DB
+	implementation(libs.bundles.kdsl.compose)
+
 	runtimeOnly(libs.h2Database)
 	runtimeOnly(libs.postgresql)
 

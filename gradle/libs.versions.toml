@@ -1,10 +1,11 @@
 [versions]
-kotlin = "2.0.21"
+kotlin = "2.1.0"
 springBoot = "3.4.0"
 springDependencyManagement = "1.1.6"
 springRedis = "3.25.2"
 swagger = "2.7.0"
 jjwt = "0.12.3"
+kdsl = "3.5.3"
 
 [libraries]
 # Kotlin Common
@@ -24,6 +25,10 @@ springBootSrarterRedis = { module = "org.redisson:redisson-spring-boot-starter",
 # DB
 h2Database = { module = "com.h2database:h2" }
 postgresql = { module = "org.postgresql:postgresql" }
+
+jpqlDsl = { module = "com.linecorp.kotlin-jdsl:jpql-dsl", version.ref = "kdsl" }
+jpqlRender = { module = "com.linecorp.kotlin-jdsl:jpql-render", version.ref = "kdsl" }
+jpqlJpaSupport = { module = "com.linecorp.kotlin-jdsl:spring-data-jpa-support", version.ref = "kdsl" }
 
 # JWT
 jjwt-api = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jjwt" }
@@ -49,3 +54,4 @@ springDependencyManagement = { id = "io.spring.dependency-management", version.r
 
 [bundles]
 kotlin-common = ["kotlinReflect", "jacksonModuleKotlin"]
+kdsl-compose = ["jpqlDsl", "jpqlRender", "jpqlJpaSupport"]
