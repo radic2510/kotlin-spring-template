@@ -45,7 +45,7 @@ dependencies {
 	// Swagger
 	implementation(libs.springdocOpenapi)
 
-	implementation("com.github.codemonstur:embedded-redis:1.4.2")
+	implementation("com.github.codemonstur:embedded-redis:1.4.3")
 	testImplementation(libs.springBootStarterTest)
 	testImplementation(libs.kotlinTestJunit5)
 	testImplementation(libs.springSecurityTest)
