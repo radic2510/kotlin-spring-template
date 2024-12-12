@@ -51,7 +51,7 @@ class RedisEmbeddedConfig {
     private fun isPortInUse(port: Int): Boolean {
         return try {
             ServerSocket(port).use { false }
-        } catch (e: IOException) {
+        } catch (_: IOException) {
             true
         }
     }
