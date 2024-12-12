@@ -4,7 +4,7 @@ springBoot = "3.4.0"
 springDependencyManagement = "1.1.6"
 springRedis = "3.25.2"
 swagger = "2.7.0"
-jjwt = "0.12.3"
+jjwt = "0.12.6"
 kdsl = "3.5.3"
 
 [libraries]
