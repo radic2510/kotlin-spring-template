@@ -1,0 +1,68 @@
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+
+  jpa:
+    open-in-view: false
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  sql:
+    init:
+      mode: always
+
+  data:
+    redis:
+      host: localhost
+      port: 16379
+
+  security:
+    oauth2:
+      client:
+        registration:
+          #          github:
+
+          google:
+            client-id: your-google-client-id
+            client-secret: your-google-client-secret
+            scope: profile, email
+            #            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            client-name: Google
+#          apple:
+#            client-id: your-apple-client-id
+#            client-secret: your-apple-client-secret
+#            scope: name, email
+#            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+#            client-name: Apple
+
+springdoc:
+  cache:
+    disabled: true              # 캐시 사용 여부
+
+jwt:
+  key: 20acb88d4cd80924cac42d9e4b0a903662b0abf58a12b53eacf75375d08038c6 # sample
+
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: true
+
+logging:
+  level:
+    root: info
+    org:
+      springframework:
+        jdbc: debug
