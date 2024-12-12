@@ -18,7 +18,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer
 @EnableRedisRepositories
 @ConditionalOnExpression("'\${spring.profiles.active:}' matches '.*(local|test).*'")
 @DependsOn("redisEmbeddedConfig")
-class RedisRepositoryConfig(
+class RedisConfig(
     @Value("\${spring.data.redis.host}") private val host: String,
     @Value("\${spring.data.redis.port}") private val port: Int
 ) {
