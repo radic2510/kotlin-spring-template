@@ -2,7 +2,7 @@
 kotlin = "2.1.0"
 springBoot = "3.4.0"
 springDependencyManagement = "1.1.6"
-springRedis = "3.25.2"
+springRedis = "3.40.2"
 swagger = "2.7.0"
 jjwt = "0.12.3"
 kdsl = "3.5.3"
