@@ -5,7 +5,7 @@ springDependencyManagement = "1.1.6"
 springRedis = "3.25.2"
 swagger = "2.7.0"
 jjwt = "0.12.3"
-kdsl = "3.5.3"
+kdsl = "3.5.4"
 
 [libraries]
 # Kotlin Common
